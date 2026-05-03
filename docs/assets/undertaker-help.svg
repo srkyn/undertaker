@@ -1,0 +1,21 @@
+<svg width="1180" height="446" viewBox="0 0 1180 446" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Undertaker help output">
+<rect width="1180" height="446" rx="14" fill="#0b1020"/>
+<rect x="12" y="12" width="1156" height="422" rx="12" fill="#020617" stroke="#334155"/>
+<circle cx="40" cy="38" r="7" fill="#ef4444"/><circle cx="64" cy="38" r="7" fill="#f59e0b"/><circle cx="88" cy="38" r="7" fill="#22c55e"/>
+<text x="118" y="43" fill="#94a3b8" font-family="Consolas, monospace" font-size="15">Undertaker help output</text>
+<text x="28" y="76" fill="#5eead4" font-family="Consolas, monospace" font-size="16">$ python legacy_automation_auditor.py --help</text>
+<text x="28" y="106" fill="#e2e8f0" font-family="Consolas, monospace" font-size="16">usage: legacy_automation_auditor.py [-h] [--days DAYS] [--output OUTPUT]</text>
+<text x="28" y="130" fill="#e2e8f0" font-family="Consolas, monospace" font-size="16">                                    [--no-json] [--only-suspicious]</text>
+<text x="28" y="154" fill="#e2e8f0" font-family="Consolas, monospace" font-size="16">                                    [--hide-windows-builtin]</text>
+<text x="28" y="178" fill="#e2e8f0" font-family="Consolas, monospace" font-size="16"></text>
+<text x="28" y="202" fill="#e2e8f0" font-family="Consolas, monospace" font-size="16">Find old and/or high-privilege scheduled automations on Linux and Windows.</text>
+<text x="28" y="226" fill="#e2e8f0" font-family="Consolas, monospace" font-size="16"></text>
+<text x="28" y="250" fill="#e2e8f0" font-family="Consolas, monospace" font-size="16">options:</text>
+<text x="28" y="274" fill="#e2e8f0" font-family="Consolas, monospace" font-size="16">  -h, --help            show this help message and exit</text>
+<text x="28" y="298" fill="#e2e8f0" font-family="Consolas, monospace" font-size="16">  --days DAYS           Age threshold in days. Default: 180.</text>
+<text x="28" y="322" fill="#e2e8f0" font-family="Consolas, monospace" font-size="16">  --output OUTPUT       JSON output path. Default: results.json.</text>
+<text x="28" y="346" fill="#e2e8f0" font-family="Consolas, monospace" font-size="16">  --no-json             Do not write JSON output.</text>
+<text x="28" y="370" fill="#e2e8f0" font-family="Consolas, monospace" font-size="16">  --only-suspicious     Only include suspicious tasks in output.</text>
+<text x="28" y="394" fill="#e2e8f0" font-family="Consolas, monospace" font-size="16">  --hide-windows-builtin</text>
+<text x="28" y="418" fill="#e2e8f0" font-family="Consolas, monospace" font-size="16">                        Hide obvious built-in Microsoft Windows tasks from output.</text>
+</svg>

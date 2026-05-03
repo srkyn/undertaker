@@ -8,6 +8,12 @@ It audits Linux cron jobs, Linux systemd timers, and Windows Scheduled Tasks, th
 
 ![CI](https://github.com/srkyn/undertaker/actions/workflows/ci.yml/badge.svg)
 
+## Demo
+
+![Redacted filtered scan output](docs/assets/undertaker-filtered-scan.svg)
+
+More screenshots are available in [docs/demo.md](docs/demo.md).
+
 ## Why It Exists
 
 Scheduled automation is easy to forget. A task may be created for maintenance, startup behavior, updates, backups, or temporary troubleshooting, then quietly keep running for months or years.
@@ -109,6 +115,7 @@ The point is not to label every privileged task as bad. The point is to make pri
 
 - `legacy_automation_auditor.py`: the scanner CLI
 - `docs/design-notes.md`: design notes, implementation details, and limitations
+- `docs/demo.md`: screenshots and example output
 - `CHANGELOG.md`: release history
 
 ## Limitations
