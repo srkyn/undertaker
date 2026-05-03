@@ -26,7 +26,7 @@ This project was built to answer a practical question:
 
 > "What automatic tasks still exist on this machine, how old are their definitions, and do any of them run with high privileges?"
 
-That makes it useful for home lab audits, endpoint hygiene, small business IT reviews, blue-team practice, and portfolio demonstration.
+That makes it useful for home lab audits, endpoint hygiene, small business IT reviews, and blue-team practice.
 
 ## What The Script Checks
 
@@ -272,28 +272,8 @@ Useful future improvements would include:
 
 The project uses "Undertaker" as the memorable public name and `legacy_automation_auditor.py` as the explicit command-line script name. That keeps the branding distinct without making the terminal workflow cute or unclear.
 
-## How To Explain This In An Interview
+## Design Summary
 
-A concise explanation would be:
+The script separates collection from scoring. Platform-specific scanner functions normalize cron entries, systemd timers, and Windows Scheduled Tasks into a common task schema. A separate scoring function applies age and privilege rules, which keeps the output consistent across operating systems and keeps the risk logic easy to adjust.
 
-> "I built Undertaker, a Python audit tool that inventories scheduled automation across Linux and Windows. It looks for cron jobs, systemd timers, and Windows Scheduled Tasks, then flags tasks that are old, privileged, or both. The idea is to help identify forgotten background jobs that may create operational or security risk. It is read-only, produces both table and JSON output, and handles permission errors gracefully."
-
-A more technical explanation would be:
-
-> "The script separates collection from scoring. Platform-specific scanner functions normalize cron entries, systemd timers, and Windows Scheduled Tasks into a common task schema. A separate scoring function applies age and privilege rules, which makes the output consistent across operating systems and keeps the risk logic easy to change."
-
-## Why This Is A Strong Portfolio Project
-
-This is a practical security engineering project because it shows:
-
-- Python scripting ability
-- Cross-platform thinking
-- Operating system knowledge
-- Security triage logic
-- Defensive tooling mindset
-- Clean CLI design
-- JSON output for automation
-- Safe read-only behavior
-- Awareness of limitations
-
-It is not flashy for the sake of being flashy. It solves a real problem that administrators, security analysts, and engineers recognize: old automation is easy to forget and can quietly become risky.
+Undertaker is intentionally narrow: inventory scheduled automation, identify old or privileged task definitions, and produce reviewable output without changing the host.
