@@ -1,8 +1,10 @@
-# Legacy Automation Auditor
+# Undertaker: Legacy Automation Auditor
+
+Find old, privileged scheduled jobs before they become operational risk.
 
 ## Plain-English Summary
 
-Legacy Automation Auditor is a Python tool that looks for scheduled jobs that may have been forgotten but still run automatically. On Linux, that means cron jobs and systemd timers. On Windows, that means Scheduled Tasks.
+Undertaker is a Python tool that looks for scheduled jobs that may have been forgotten but still run automatically. On Linux, that means cron jobs and systemd timers. On Windows, that means Scheduled Tasks.
 
 The goal is simple: find automation that is old, powerful, or both.
 
@@ -266,11 +268,15 @@ Useful future improvements would include:
 - Add allowlist support for known-good tasks.
 - Add tests with sample cron, systemd, and Windows task fixtures.
 
+## Naming Note
+
+The project uses "Undertaker" as the memorable public name and `legacy_automation_auditor.py` as the explicit command-line script name. That keeps the branding distinct without making the terminal workflow cute or unclear.
+
 ## How To Explain This In An Interview
 
 A concise explanation would be:
 
-> "I built a Python audit tool that inventories scheduled automation across Linux and Windows. It looks for cron jobs, systemd timers, and Windows Scheduled Tasks, then flags tasks that are old, privileged, or both. The idea is to help identify forgotten background jobs that may create operational or security risk. It is read-only, produces both table and JSON output, and handles permission errors gracefully."
+> "I built Undertaker, a Python audit tool that inventories scheduled automation across Linux and Windows. It looks for cron jobs, systemd timers, and Windows Scheduled Tasks, then flags tasks that are old, privileged, or both. The idea is to help identify forgotten background jobs that may create operational or security risk. It is read-only, produces both table and JSON output, and handles permission errors gracefully."
 
 A more technical explanation would be:
 

@@ -1,10 +1,12 @@
-# Legacy Automation Auditor
+# Undertaker: Legacy Automation Auditor
 
-Legacy Automation Auditor is a read-only Python tool for finding scheduled jobs that may be old, privileged, or both.
+Find old, privileged scheduled jobs before they become operational risk.
+
+Undertaker is a read-only Python tool for finding scheduled jobs that may be old, privileged, or both.
 
 It audits Linux cron jobs, Linux systemd timers, and Windows Scheduled Tasks, then prints a human-readable table and optionally writes JSON output for later review.
 
-![CI](https://github.com/srkyn/legacy-automation-auditor/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/srkyn/undertaker/actions/workflows/ci.yml/badge.svg)
 
 ## Why It Exists
 
@@ -96,7 +98,7 @@ The point is not to label every privileged task as bad. The point is to make pri
 
 ## Files
 
-- `legacy_automation_auditor.py`: the scanner
+- `legacy_automation_auditor.py`: the scanner CLI
 - `legacy_automation_auditor_writeup.md`: full project explanation, design notes, limitations, and interview-ready summary
 
 ## Limitations
