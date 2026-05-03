@@ -28,6 +28,9 @@ Task = Dict[str, Any]
 Warning = Dict[str, str]
 
 
+VERSION = "0.1.1"
+
+
 CRON_ENV_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*\s*=")
 SYSTEMD_ON_CALENDAR_RE = re.compile(r"^\s*OnCalendar\s*=\s*(.+?)\s*$", re.IGNORECASE)
 SYSTEMD_UNIT_RE = re.compile(r"^\s*Unit\s*=\s*(.+?)\s*$", re.IGNORECASE)
@@ -570,6 +573,7 @@ def parse_args(argv: Optional[Iterable[str]] = None) -> argparse.Namespace:
     parser.add_argument("--days", type=int, default=180, help="Age threshold in days. Default: 180.")
     parser.add_argument("--output", default="results.json", help="JSON output path. Default: results.json.")
     parser.add_argument("--no-json", action="store_true", help="Do not write JSON output.")
+    parser.add_argument("--version", action="version", version=f"Undertaker {VERSION}")
     parser.add_argument("--only-suspicious", action="store_true", help="Only include suspicious tasks in output.")
     parser.add_argument(
         "--hide-windows-builtin",

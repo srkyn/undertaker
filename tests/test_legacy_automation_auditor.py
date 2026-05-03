@@ -12,6 +12,9 @@ import legacy_automation_auditor as auditor  # noqa: E402
 
 
 class LegacyAutomationAuditorTests(unittest.TestCase):
+    def test_version_is_defined(self):
+        self.assertRegex(auditor.VERSION, r"^\d+\.\d+\.\d+$")
+
     def test_add_flags_marks_old_privileged_tasks_high(self):
         now = dt.datetime(2026, 5, 3, tzinfo=dt.timezone.utc)
         old_timestamp = dt.datetime(2025, 1, 1, tzinfo=dt.timezone.utc).timestamp()

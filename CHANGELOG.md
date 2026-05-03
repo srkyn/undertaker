@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.1.1 - Polish Release
+
+### Added
+
+- `--version` CLI option.
+- README trust signals for release, CI, Python version, and license.
+- README summary of JSON output fields.
+- CI check for the installed CLI version command.
+
 ## v0.1.0 - Initial Public Release
 
 Undertaker is ready as a first public release.

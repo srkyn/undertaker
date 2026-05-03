@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "undertaker-auditor"
-version = "0.1.0"
+version = "0.1.1"
 description = "Find old, privileged scheduled jobs before they become operational risk."
 readme = "README.md"
 requires-python = ">=3.8"
@@ -40,4 +40,3 @@ undertaker = "legacy_automation_auditor:main"
 
 [tool.setuptools]
 py-modules = ["legacy_automation_auditor"]
-

@@ -31,3 +31,6 @@ jobs:
 
       - name: Check CLI entry point
         run: undertaker --help
+
+      - name: Check CLI version
+        run: undertaker --version
