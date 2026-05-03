@@ -1,0 +1,39 @@
+name: Bug report
+description: Report a reproducible issue in Undertaker.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting an issue. Please avoid pasting secrets, private hostnames, or sensitive task output.
+  - type: input
+    id: platform
+    attributes:
+      label: Platform
+      description: Operating system and version.
+      placeholder: "Windows 11, Ubuntu 24.04, Debian 12"
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command
+      description: The command you ran.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include sanitized output if helpful.
+    validations:
+      required: true
+

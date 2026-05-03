@@ -16,10 +16,12 @@ Undertaker is ready as a first public release.
 - `--days`, `--output`, `--no-json`, `--only-suspicious`, and `--hide-windows-builtin` CLI options.
 - Unit tests for scoring, cron parsing, nickname schedules, and Windows built-in filtering.
 - GitHub Actions CI across Python 3.8 and 3.12.
+- Installable CLI metadata through `pyproject.toml`.
+- GitHub issue templates for bug reports and feature requests.
+- Security policy for safe reporting expectations.
 
 ### Notes
 
 - Undertaker is read-only. It does not disable, delete, or modify scheduled tasks.
 - Findings are triage signals, not proof of compromise.
 - Some task details may be unavailable without elevated permissions.
-

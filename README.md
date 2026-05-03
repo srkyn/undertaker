@@ -50,8 +50,17 @@ The flags are triage signals, not proof of compromise.
 
 ## Usage
 
+Run directly from a clone:
+
 ```bash
 python legacy_automation_auditor.py
+```
+
+Install as a local CLI from the repository:
+
+```bash
+python -m pip install .
+undertaker --only-suspicious
 ```
 
 Use a different age threshold:
@@ -99,7 +108,7 @@ The point is not to label every privileged task as bad. The point is to make pri
 ## Files
 
 - `legacy_automation_auditor.py`: the scanner CLI
-- `legacy_automation_auditor_writeup.md`: full project explanation, design notes, and limitations
+- `docs/design-notes.md`: design notes, implementation details, and limitations
 - `CHANGELOG.md`: release history
 
 ## Limitations
