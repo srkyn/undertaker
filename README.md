@@ -4,6 +4,8 @@ Legacy Automation Auditor is a read-only Python tool for finding scheduled jobs 
 
 It audits Linux cron jobs, Linux systemd timers, and Windows Scheduled Tasks, then prints a human-readable table and optionally writes JSON output for later review.
 
+![CI](https://github.com/srkyn/legacy-automation-auditor/actions/workflows/ci.yml/badge.svg)
+
 ## Why It Exists
 
 Scheduled automation is easy to forget. A task may be created for maintenance, startup behavior, updates, backups, or temporary troubleshooting, then quietly keep running for months or years.
