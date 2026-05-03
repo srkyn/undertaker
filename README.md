@@ -100,6 +100,7 @@ The point is not to label every privileged task as bad. The point is to make pri
 
 - `legacy_automation_auditor.py`: the scanner CLI
 - `legacy_automation_auditor_writeup.md`: full project explanation, design notes, limitations, and interview-ready summary
+- `CHANGELOG.md`: release history
 
 ## Limitations
 
