@@ -68,6 +68,18 @@ Skip JSON output:
 python legacy_automation_auditor.py --no-json
 ```
 
+Show only tasks that were flagged:
+
+```bash
+python legacy_automation_auditor.py --only-suspicious
+```
+
+Reduce Windows noise by hiding obvious built-in Microsoft tasks:
+
+```bash
+python legacy_automation_auditor.py --hide-windows-builtin
+```
+
 The script ends with a summary:
 
 ```text
@@ -100,5 +112,5 @@ The script was checked with:
 ```bash
 python -m py_compile legacy_automation_auditor.py
 python legacy_automation_auditor.py --no-json
+python -m unittest discover -s tests
 ```
-

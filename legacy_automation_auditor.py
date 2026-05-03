@@ -484,6 +484,34 @@ def scan_all(warnings: List[Warning]) -> List[Task]:
     return []
 
 
+def is_windows_builtin_task(task: Task) -> bool:
+    if task.get("platform") != "windows":
+        return False
+
+    name = str(task.get("name") or "").lower()
+    command = str(task.get("command") or "").lower()
+    source = str(task.get("source") or "").lower()
+
+    return (
+        name.startswith("\\microsoft\\windows\\")
+        or "\\windows\\system32\\tasks\\microsoft\\windows\\" in source
+        or command.startswith("%windir%\\")
+        or command.startswith("%systemroot%\\")
+        or command.startswith("c:\\windows\\")
+    )
+
+
+def filter_tasks(tasks: List[Task], only_suspicious: bool, hide_windows_builtin: bool) -> List[Task]:
+    filtered = []
+    for task in tasks:
+        if only_suspicious and not task.get("suspicious"):
+            continue
+        if hide_windows_builtin and is_windows_builtin_task(task):
+            continue
+        filtered.append(task)
+    return filtered
+
+
 def trim(value: Any, width: int) -> str:
     text = "" if value is None else str(value)
     if len(text) <= width:
@@ -542,6 +570,12 @@ def parse_args(argv: Optional[Iterable[str]] = None) -> argparse.Namespace:
     parser.add_argument("--days", type=int, default=180, help="Age threshold in days. Default: 180.")
     parser.add_argument("--output", default="results.json", help="JSON output path. Default: results.json.")
     parser.add_argument("--no-json", action="store_true", help="Do not write JSON output.")
+    parser.add_argument("--only-suspicious", action="store_true", help="Only include suspicious tasks in output.")
+    parser.add_argument(
+        "--hide-windows-builtin",
+        action="store_true",
+        help="Hide obvious built-in Microsoft Windows tasks from output.",
+    )
     return parser.parse_args(argv)
 
 
@@ -555,19 +589,22 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
 
     now = utc_now()
     tasks = [add_flags(task, args.days, now) for task in scan_all(warnings)]
+    output_tasks = filter_tasks(tasks, args.only_suspicious, args.hide_windows_builtin)
 
-    print_table(tasks)
+    print_table(output_tasks)
 
     suspicious_count = sum(1 for task in tasks if task.get("suspicious"))
     high_count = sum(1 for task in tasks if task.get("severity") == "high")
     print(f"\nFound {len(tasks)} tasks, {suspicious_count} suspicious ({high_count} high severity).")
+    if len(output_tasks) != len(tasks):
+        print(f"Displayed {len(output_tasks)} task(s) after filters.")
 
     if warnings:
         print(f"Warnings: {len(warnings)} collection issue(s). See JSON output for details." if not args.no_json else f"Warnings: {len(warnings)} collection issue(s).")
 
     if not args.no_json:
         try:
-            write_json(args.output, tasks, warnings, args.days)
+            write_json(args.output, output_tasks, warnings, args.days)
             print(f"Wrote JSON results to {args.output}")
         except OSError as exc:
             print(f"Could not write JSON output {args.output}: {exc}", file=sys.stderr)

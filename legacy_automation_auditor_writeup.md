@@ -111,6 +111,18 @@ Print only the table and skip JSON output:
 python legacy_automation_auditor.py --no-json
 ```
 
+Show only suspicious tasks:
+
+```bash
+python legacy_automation_auditor.py --only-suspicious
+```
+
+Hide obvious built-in Microsoft Windows tasks:
+
+```bash
+python legacy_automation_auditor.py --hide-windows-builtin
+```
+
 The script prints a summary like:
 
 ```text
@@ -246,9 +258,7 @@ These limitations are acceptable for a first-pass auditor. The tool is meant to 
 
 Useful future improvements would include:
 
-- Add a filter to hide known Microsoft Windows tasks.
 - Add CSV output for spreadsheet review.
-- Add a `--only-suspicious` option.
 - Check whether referenced command paths exist.
 - Hash task target scripts or executables.
 - Report last run time where the platform exposes it reliably.
@@ -281,4 +291,3 @@ This is a practical security engineering project because it shows:
 - Awareness of limitations
 
 It is not flashy for the sake of being flashy. It solves a real problem that administrators, security analysts, and engineers recognize: old automation is easy to forget and can quietly become risky.
-
