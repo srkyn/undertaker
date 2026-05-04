@@ -15,6 +15,11 @@ class LegacyAutomationAuditorTests(unittest.TestCase):
     def test_version_is_defined(self):
         self.assertRegex(auditor.VERSION, r"^\d+\.\d+\.\d+$")
 
+    def test_is_root_like_handles_domain_qualified_windows_accounts(self):
+        self.assertTrue(auditor.is_root_like("NT AUTHORITY\\SYSTEM"))
+        self.assertTrue(auditor.is_root_like("BUILTIN\\Administrators"))
+        self.assertFalse(auditor.is_root_like("DOMAIN\\analyst"))
+
     def test_add_flags_marks_old_privileged_tasks_high(self):
         now = dt.datetime(2026, 5, 3, tzinfo=dt.timezone.utc)
         old_timestamp = dt.datetime(2025, 1, 1, tzinfo=dt.timezone.utc).timestamp()

@@ -1,6 +1,6 @@
 {
+  "_comment": "Entries are case-insensitive substring matches against task name, source, command path, and command text.",
   "allowlist": [
-    "substring matches are case-insensitive",
     "\\Microsoft\\Windows\\Defrag\\ScheduledDefrag",
     "/etc/cron.daily/logrotate",
     "known-maintenance-task"

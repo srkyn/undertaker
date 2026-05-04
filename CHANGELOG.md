@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.3.1 - CLI Correctness
+
+### Fixed
+
+- Kept JSON stdout clean when `--format json` also writes a JSON file.
+- Recognized domain-qualified Windows privileged accounts such as `NT AUTHORITY\SYSTEM`.
+- Moved the allowlist example explanation into a `_comment` field instead of an allowlist entry.
+
 ## v0.3.0 - Triage Depth
 
 ### Added

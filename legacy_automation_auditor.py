@@ -28,7 +28,7 @@ Task = Dict[str, Any]
 Warning = Dict[str, str]
 
 
-VERSION = "0.3.0"
+VERSION = "0.3.1"
 
 
 CRON_ENV_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*\s*=")
@@ -96,7 +96,14 @@ def is_root_like(value: Optional[str]) -> bool:
     if not value:
         return False
     normalized = value.strip().lower()
-    return normalized in {"root", "0", "administrator", "administrators", "system", "localsystem"}
+    privileged_names = {"root", "0", "administrator", "administrators", "system", "localsystem"}
+    return (
+        normalized in privileged_names
+        or normalized.endswith("\\administrator")
+        or normalized.endswith("\\administrators")
+        or normalized.endswith("\\system")
+        or normalized.endswith("\\localsystem")
+    )
 
 
 def first_command_token(command: str) -> str:
@@ -741,7 +748,7 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
     if not args.no_json:
         try:
             write_json(args.output, output_tasks, warnings, args.days)
-            print(f"Wrote JSON results to {args.output}")
+            print(f"Wrote JSON results to {args.output}", file=sys.stderr if args.format == "json" else sys.stdout)
         except OSError as exc:
             print(f"Could not write JSON output {args.output}: {exc}", file=sys.stderr)
             return 1
