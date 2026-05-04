@@ -1,0 +1,9 @@
+[Unit]
+Description=Legacy cleanup timer fixture
+
+[Timer]
+OnCalendar=Sun *-*-* 02:30:00
+Unit=legacy-cleanup.service
+
+[Install]
+WantedBy=timers.target

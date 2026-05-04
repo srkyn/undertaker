@@ -1,0 +1,8 @@
+{
+  "allowlist": [
+    "substring matches are case-insensitive",
+    "\\Microsoft\\Windows\\Defrag\\ScheduledDefrag",
+    "/etc/cron.daily/logrotate",
+    "known-maintenance-task"
+  ]
+}

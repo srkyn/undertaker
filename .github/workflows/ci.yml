@@ -37,3 +37,6 @@ jobs:
 
       - name: Check JSON stdout
         run: undertaker --format json --no-json
+
+      - name: Check allowlist example
+        run: undertaker --allowlist examples/allowlist.example.json --no-json

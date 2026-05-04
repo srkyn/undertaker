@@ -1,0 +1,4 @@
+SHELL=/bin/sh
+# system cron fixture
+0 3 * * * root /usr/local/sbin/root-maintenance --quiet
+@daily appuser /opt/app/bin/daily-job

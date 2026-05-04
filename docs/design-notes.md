@@ -178,6 +178,14 @@ The auditor is designed to be safe. It does not disable tasks, delete files, cha
 
 That is intentional. Scheduled tasks can be important. Disabling the wrong one can break updates, monitoring, backups, or business workflows. A good audit tool should identify risk first and leave remediation to a deliberate human decision.
 
+## Allowlist Behavior
+
+The allowlist is intentionally simple. Entries are case-insensitive substrings matched against task name, source path, command path, and command text.
+
+When an allowlist entry matches, Undertaker keeps the task in the output but clears its suspicious status, records `allowlisted: true`, and stores the matching entry in `allowlist_match`.
+
+This keeps known-good scheduled jobs visible without letting them inflate suspicious counts.
+
 ## Technical Design
 
 The script uses only Python standard libraries.
@@ -252,7 +260,7 @@ It uses task definition modification time, not last execution time.
 
 It does not inspect the contents of scripts launched by scheduled jobs.
 
-It does not verify whether command paths still exist.
+It only verifies whether command paths appear to exist when `--check-paths` is used.
 
 These limitations are acceptable for a first-pass auditor. The tool is meant to identify review candidates, not replace a full incident response investigation.
 
@@ -261,7 +269,6 @@ These limitations are acceptable for a first-pass auditor. The tool is meant to 
 Useful future improvements would include:
 
 - Add CSV output for spreadsheet review.
-- Check whether referenced command paths exist.
 - Hash task target scripts or executables.
 - Report last run time where the platform exposes it reliably.
 - Add macOS `launchd` support.

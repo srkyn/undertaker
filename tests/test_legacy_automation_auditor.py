@@ -28,6 +28,28 @@ class LegacyAutomationAuditorTests(unittest.TestCase):
         self.assertTrue(task["suspicious"])
         self.assertEqual(task["severity"], "high")
         self.assertEqual(task["flags"], ["old_definition", "privileged"])
+        self.assertEqual(len(task["risk_reasons"]), 2)
+
+    def test_apply_allowlist_suppresses_matching_task(self):
+        tasks = [
+            {
+                "name": "known-maintenance",
+                "source": "/etc/cron.d/known",
+                "command_path": "/usr/local/bin/known",
+                "command": "/usr/local/bin/known",
+                "flags": ["privileged"],
+                "risk_reasons": ["Task runs as root."],
+                "suspicious": True,
+                "severity": "medium",
+            }
+        ]
+
+        auditor.apply_allowlist(tasks, ["known-maintenance"])
+
+        self.assertFalse(tasks[0]["suspicious"])
+        self.assertEqual(tasks[0]["severity"], "none")
+        self.assertTrue(tasks[0]["allowlisted"])
+        self.assertEqual(tasks[0]["allowlist_match"], "known-maintenance")
 
     def test_build_payload_summarizes_filtered_tasks(self):
         tasks = [
@@ -85,6 +107,22 @@ class LegacyAutomationAuditorTests(unittest.TestCase):
         self.assertEqual(tasks[0]["run_user"], "alice")
         self.assertEqual(tasks[0]["command_path"], "/usr/local/bin/backup.sh")
 
+    def test_parse_cron_fixture(self):
+        path = os.path.join(PROJECT_ROOT, "tests", "fixtures", "cron", "system-cron")
+
+        tasks = auditor.parse_cron_file(
+            path=path,
+            default_user=None,
+            source_type="fixture",
+            system_format=True,
+            warnings=[],
+        )
+
+        self.assertEqual(len(tasks), 2)
+        self.assertEqual(tasks[0]["run_user"], "root")
+        self.assertEqual(tasks[1]["schedule"], "@daily")
+        self.assertEqual(tasks[1]["run_user"], "appuser")
+
     def test_parse_system_cron_file_with_user_field(self):
         with tempfile.NamedTemporaryFile("w", delete=False, encoding="utf-8") as handle:
             handle.write("*/15 * * * * www-data /srv/app/cleanup.sh\n")
@@ -139,6 +177,17 @@ class LegacyAutomationAuditorTests(unittest.TestCase):
 
         self.assertEqual(schedule, "daily; Mon *-*-* 03:00:00")
         self.assertEqual(unit_name, "undertaker.service")
+
+    def test_parse_systemd_timer_fixture(self):
+        timer_path = os.path.join(PROJECT_ROOT, "tests", "fixtures", "systemd", "legacy-cleanup.timer")
+        service_path = os.path.join(PROJECT_ROOT, "tests", "fixtures", "systemd", "legacy-cleanup.service")
+
+        schedule, unit_name = auditor.parse_systemd_timer_file(timer_path, warnings=[])
+        service_user = auditor.parse_systemd_service_user(service_path, warnings=[])
+
+        self.assertEqual(schedule, "Sun *-*-* 02:30:00")
+        self.assertEqual(unit_name, "legacy-cleanup.service")
+        self.assertEqual(service_user, "cleanup")
 
     def test_parse_systemd_service_user(self):
         with tempfile.NamedTemporaryFile("w", delete=False, encoding="utf-8") as handle:

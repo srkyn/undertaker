@@ -20,6 +20,8 @@ It audits Linux cron jobs, Linux systemd timers, and Windows Scheduled Tasks, th
 - Includes filters to reduce Windows baseline noise.
 - Can emit JSON to stdout for pipelines.
 - Can optionally check whether extracted command paths exist.
+- Supports allowlists for known-good scheduled jobs.
+- Includes Windows last-run metadata when available.
 - Ships with tests, CI, issue templates, a security policy, and versioned releases.
 
 ## Demo
@@ -115,6 +117,12 @@ python legacy_automation_auditor.py --check-paths
 
 When enabled, missing command paths are flagged as `missing_command_path` and shown in table output.
 
+Suppress known-good tasks with an allowlist:
+
+```bash
+python legacy_automation_auditor.py --allowlist examples/allowlist.example.json
+```
+
 Skip JSON output:
 
 ```bash
@@ -141,7 +149,7 @@ Found X tasks, Y suspicious (Z high severity).
 
 ## Output Fields
 
-JSON output includes each task's platform, type, name, command, run user, owner, schedule, source definition, modified timestamp, age in days, flags, and severity. When `--check-paths` is used, each task also includes `command_path_exists`.
+JSON output includes each task's platform, type, name, command, run user, owner, schedule, source definition, modified timestamp, age in days, flags, risk reasons, and severity. Windows tasks include last-run metadata when available. When `--check-paths` is used, each task also includes `command_path_exists`.
 
 Severity is intentionally simple:
 
@@ -159,6 +167,7 @@ The point is not to label every privileged task as bad. The point is to make pri
 - `legacy_automation_auditor.py`: the scanner CLI
 - `docs/design-notes.md`: design notes, implementation details, and limitations
 - `docs/demo.md`: screenshots and example output
+- `examples/allowlist.example.json`: sample allowlist
 - `CHANGELOG.md`: release history
 
 ## Limitations

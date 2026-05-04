@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.3.0 - Triage Depth
+
+### Added
+
+- `risk_reasons` field for clearer JSON explanations.
+- `--allowlist` support for suppressing known-good scheduled jobs.
+- Example allowlist file.
+- Windows `last_run_time` and `last_task_result` fields when available.
+- Fixture-based cron and systemd parser tests.
+
 ## v0.2.0 - Pipeline And Verification Improvements
 
 ### Added

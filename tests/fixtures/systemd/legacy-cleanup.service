@@ -1,0 +1,7 @@
+[Unit]
+Description=Legacy cleanup service fixture
+
+[Service]
+Type=oneshot
+User=cleanup
+ExecStart=/usr/local/sbin/legacy-cleanup

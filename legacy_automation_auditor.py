@@ -28,7 +28,7 @@ Task = Dict[str, Any]
 Warning = Dict[str, str]
 
 
-VERSION = "0.2.0"
+VERSION = "0.3.0"
 
 
 CRON_ENV_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*\s*=")
@@ -128,10 +128,13 @@ def add_flags(task: Task, days: int, now: dt.datetime) -> Task:
 
     privileged = bool(task.get("runs_as_privileged"))
     flags: List[str] = []
+    risk_reasons: List[str] = []
     if age_suspicious:
         flags.append("old_definition")
+        risk_reasons.append(f"Task definition is older than {days} days.")
     if privileged:
         flags.append("privileged")
+        risk_reasons.append(f"Task runs as {task.get('privilege_level') or task.get('run_user') or 'a privileged account'}.")
 
     severity = "none"
     if age_suspicious and privileged:
@@ -141,6 +144,7 @@ def add_flags(task: Task, days: int, now: dt.datetime) -> Task:
 
     task["age_days"] = age_days
     task["flags"] = flags
+    task["risk_reasons"] = risk_reasons
     task["suspicious"] = bool(flags)
     task["severity"] = severity
     return task
@@ -174,6 +178,58 @@ def command_path_exists(command_path: str) -> Optional[bool]:
     return shutil.which(expanded) is not None
 
 
+def task_identity(task: Task) -> List[str]:
+    values = [
+        task.get("name"),
+        task.get("source"),
+        task.get("command_path"),
+        task.get("command"),
+    ]
+    return [str(value).lower() for value in values if value]
+
+
+def load_allowlist(path: Optional[str], warnings: List[Warning]) -> List[str]:
+    if not path:
+        return []
+
+    try:
+        with open(path, "r", encoding="utf-8") as handle:
+            data = json.load(handle)
+    except (OSError, json.JSONDecodeError) as exc:
+        warnings.append({"source": path, "error": f"Could not load allowlist: {exc}"})
+        return []
+
+    if isinstance(data, list):
+        entries = data
+    elif isinstance(data, dict):
+        entries = data.get("allowlist", [])
+    else:
+        warnings.append({"source": path, "error": "Allowlist must be a list or an object with an allowlist key"})
+        return []
+
+    return [str(entry).lower() for entry in entries if str(entry).strip()]
+
+
+def apply_allowlist(tasks: List[Task], allowlist: List[str]) -> List[Task]:
+    if not allowlist:
+        return tasks
+
+    for task in tasks:
+        identities = task_identity(task)
+        matched = next((entry for entry in allowlist if any(entry in identity for identity in identities)), None)
+        if not matched:
+            continue
+
+        task["allowlisted"] = True
+        task["allowlist_match"] = matched
+        task["flags"] = []
+        task["risk_reasons"] = [f"Suppressed by allowlist entry: {matched}"]
+        task["suspicious"] = False
+        task["severity"] = "none"
+
+    return tasks
+
+
 def add_path_checks(tasks: List[Task]) -> List[Task]:
     for task in tasks:
         exists = command_path_exists(str(task.get("command_path") or ""))
@@ -182,6 +238,8 @@ def add_path_checks(tasks: List[Task]) -> List[Task]:
             flags = task.setdefault("flags", [])
             if "missing_command_path" not in flags:
                 flags.append("missing_command_path")
+            risk_reasons = task.setdefault("risk_reasons", [])
+            risk_reasons.append("Extracted command path does not appear to exist.")
             task["suspicious"] = True
             if task.get("severity") == "none":
                 task["severity"] = "medium"
@@ -448,6 +506,7 @@ def scan_windows_scheduled_tasks(warnings: List[Warning]) -> List[Task]:
     ps_script = r"""
 $ErrorActionPreference = 'Continue'
 Get-ScheduledTask | ForEach-Object {
+    $info = $_ | Get-ScheduledTaskInfo
     $principal = $_.Principal
     $actions = @($_.Actions | ForEach-Object {
         $execute = $_.Execute
@@ -464,6 +523,8 @@ Get-ScheduledTask | ForEach-Object {
         Actions = $actions
         ActionPaths = $actionPaths
         Triggers = $triggers
+        LastRunTime = if ($info) { $info.LastRunTime } else { $null }
+        LastTaskResult = if ($info) { $info.LastTaskResult } else { $null }
     }
 } | ConvertTo-Json -Depth 5
 """
@@ -524,6 +585,8 @@ Get-ScheduledTask | ForEach-Object {
                 "source_type": "Windows Scheduled Task",
                 "mtime_epoch": mtime,
                 "mtime": iso_from_timestamp(mtime),
+                "last_run_time": item.get("LastRunTime"),
+                "last_task_result": item.get("LastTaskResult"),
             }
         )
 
@@ -632,6 +695,10 @@ def parse_args(argv: Optional[Iterable[str]] = None) -> argparse.Namespace:
         action="store_true",
         help="Check whether extracted command paths appear to exist.",
     )
+    parser.add_argument(
+        "--allowlist",
+        help="Path to a JSON allowlist. Entries are matched against task name, source, command path, and command.",
+    )
     parser.add_argument("--version", action="version", version=f"Undertaker {VERSION}")
     parser.add_argument("--only-suspicious", action="store_true", help="Only include suspicious tasks in output.")
     parser.add_argument(
@@ -654,6 +721,7 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
     tasks = [add_flags(task, args.days, now) for task in scan_all(warnings)]
     if args.check_paths:
         add_path_checks(tasks)
+    apply_allowlist(tasks, load_allowlist(args.allowlist, warnings))
     output_tasks = filter_tasks(tasks, args.only_suspicious, args.hide_windows_builtin)
 
     if args.format == "json":
