@@ -18,6 +18,8 @@ It audits Linux cron jobs, Linux systemd timers, and Windows Scheduled Tasks, th
 - Flags task definitions that are old, privileged, or both.
 - Writes human-readable tables and structured JSON.
 - Includes filters to reduce Windows baseline noise.
+- Can emit JSON to stdout for pipelines.
+- Can optionally check whether extracted command paths exist.
 - Ships with tests, CI, issue templates, a security policy, and versioned releases.
 
 ## Demo
@@ -99,6 +101,20 @@ Write JSON to a specific file:
 python legacy_automation_auditor.py --output results.json
 ```
 
+Emit JSON to stdout:
+
+```bash
+python legacy_automation_auditor.py --format json --no-json
+```
+
+Check whether extracted command paths appear to exist:
+
+```bash
+python legacy_automation_auditor.py --check-paths
+```
+
+When enabled, missing command paths are flagged as `missing_command_path` and shown in table output.
+
 Skip JSON output:
 
 ```bash
@@ -125,7 +141,7 @@ Found X tasks, Y suspicious (Z high severity).
 
 ## Output Fields
 
-JSON output includes each task's platform, type, name, command, run user, owner, schedule, source definition, modified timestamp, age in days, flags, and severity.
+JSON output includes each task's platform, type, name, command, run user, owner, schedule, source definition, modified timestamp, age in days, flags, and severity. When `--check-paths` is used, each task also includes `command_path_exists`.
 
 Severity is intentionally simple:
 
@@ -160,5 +176,6 @@ The script was checked with:
 ```bash
 python -m py_compile legacy_automation_auditor.py
 python legacy_automation_auditor.py --no-json
+python legacy_automation_auditor.py --format json --no-json
 python -m unittest discover -s tests
 ```

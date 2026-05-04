@@ -34,3 +34,6 @@ jobs:
 
       - name: Check CLI version
         run: undertaker --version
+
+      - name: Check JSON stdout
+        run: undertaker --format json --no-json

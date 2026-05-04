@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.2.0 - Pipeline And Verification Improvements
+
+### Added
+
+- `--format json` for structured stdout output.
+- `--check-paths` to optionally check whether extracted command paths appear to exist.
+- Shared JSON payload builder for file and stdout output.
+- `missing_command_path` flag when `--check-paths` finds a missing command path.
+- Path existence status in table output when `--check-paths` is enabled.
+- Additional parser tests for system cron, systemd timers, systemd service users, path checks, and JSON payload summaries.
+
 ## v0.1.1 - Polish Release
 
 ### Added

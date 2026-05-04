@@ -1,15 +1,16 @@
-<svg width="1180" height="302" viewBox="0 0 1180 302" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Redacted Windows filtered scan output">
-<rect width="1180" height="302" rx="14" fill="#0b1020"/>
-<rect x="12" y="12" width="1156" height="278" rx="12" fill="#020617" stroke="#334155"/>
+<svg width="1250" height="326" viewBox="0 0 1250 326" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Redacted Windows filtered scan with path checks">
+<rect width="1250" height="326" rx="14" fill="#0b1020"/>
+<rect x="12" y="12" width="1226" height="302" rx="12" fill="#020617" stroke="#334155"/>
 <circle cx="40" cy="38" r="7" fill="#ef4444"/><circle cx="64" cy="38" r="7" fill="#f59e0b"/><circle cx="88" cy="38" r="7" fill="#22c55e"/>
-<text x="118" y="43" fill="#94a3b8" font-family="Consolas, monospace" font-size="15">Redacted Windows filtered scan output</text>
-<text x="28" y="76" fill="#5eead4" font-family="Consolas, monospace" font-size="16">$ python legacy_automation_auditor.py --only-suspicious --hide-windows-builtin --no-json</text>
-<text x="28" y="106" fill="#e2e8f0" font-family="Consolas, monospace" font-size="16">Severity  Type            Name                         Run As             Age   Schedule                 Command/Source</text>
-<text x="28" y="130" fill="#e2e8f0" font-family="Consolas, monospace" font-size="16">--------  --------------  ---------------------------  -----------------  ----  -----------------------  -------------------------</text>
-<text x="28" y="154" fill="#facc15" font-family="Consolas, monospace" font-size="16">MEDIUM    scheduled-task  \Vendor\UpdaterTask        SYSTEM (Highest)   164d  MSFT_TaskDailyTrigger    [redacted vendor updater]</text>
-<text x="28" y="178" fill="#facc15" font-family="Consolas, monospace" font-size="16">MEDIUM    scheduled-task  \EndpointHealthCheck        SYSTEM (Limited)   5d    MSFT_TaskBootTrigger     [redacted local script]</text>
-<text x="28" y="202" fill="#facc15" font-family="Consolas, monospace" font-size="16">MEDIUM    scheduled-task  \UserStartupAutomation      Admin (Highest)    16d   MSFT_TaskTimeTrigger     [redacted user task]</text>
-<text x="28" y="226" fill="#e2e8f0" font-family="Consolas, monospace" font-size="16"></text>
-<text x="28" y="250" fill="#5eead4" font-family="Consolas, monospace" font-size="16">Found 233 tasks, 169 suspicious (0 high severity).</text>
-<text x="28" y="274" fill="#5eead4" font-family="Consolas, monospace" font-size="16">Displayed 13 task(s) after filters.</text>
+<text x="118" y="43" fill="#94a3b8" font-family="Consolas, monospace" font-size="15">Redacted Windows filtered scan with path checks</text>
+<text x="28" y="76" fill="#5eead4" font-family="Consolas, monospace" font-size="16">$ python legacy_automation_auditor.py --only-suspicious --hide-windows-builtin --check-paths --no-json</text>
+<text x="28" y="106" fill="#e2e8f0" font-family="Consolas, monospace" font-size="16">Severity  Type            Name                         Run As             Age   Schedule                 Path  Command/Source</text>
+<text x="28" y="130" fill="#e2e8f0" font-family="Consolas, monospace" font-size="16">--------  --------------  ---------------------------  -----------------  ----  -----------------------  ----  -------------------------</text>
+<text x="28" y="154" fill="#facc15" font-family="Consolas, monospace" font-size="16">MEDIUM    scheduled-task  \Vendor\UpdaterTask        SYSTEM (Highest)   165d  MSFT_TaskDailyTrigger    yes   [redacted vendor updater]</text>
+<text x="28" y="178" fill="#facc15" font-family="Consolas, monospace" font-size="16">MEDIUM    scheduled-task  \EndpointHealthCheck        SYSTEM (Limited)   5d    MSFT_TaskBootTrigger     yes   [redacted local script]</text>
+<text x="28" y="202" fill="#facc15" font-family="Consolas, monospace" font-size="16">MEDIUM    scheduled-task  \UserStartupAutomation      Admin (Highest)    17d   MSFT_TaskTimeTrigger     yes   [redacted user task]</text>
+<text x="28" y="226" fill="#facc15" font-family="Consolas, monospace" font-size="16">MEDIUM    scheduled-task  \RemovedLegacyTask          Admin (Limited)    90d   MSFT_TaskLogonTrigger    no    [redacted missing path]</text>
+<text x="28" y="250" fill="#e2e8f0" font-family="Consolas, monospace" font-size="16"></text>
+<text x="28" y="274" fill="#5eead4" font-family="Consolas, monospace" font-size="16">Found 242 tasks, 174 suspicious (0 high severity).</text>
+<text x="28" y="298" fill="#5eead4" font-family="Consolas, monospace" font-size="16">Displayed 18 task(s) after filters.</text>
 </svg>

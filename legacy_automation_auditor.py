@@ -28,7 +28,7 @@ Task = Dict[str, Any]
 Warning = Dict[str, str]
 
 
-VERSION = "0.1.1"
+VERSION = "0.2.0"
 
 
 CRON_ENV_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*\s*=")
@@ -104,9 +104,16 @@ def first_command_token(command: str) -> str:
     if not command:
         return ""
     try:
-        return shlex.split(command, posix=(os.name != "nt"))[0]
+        return shlex.split(command, posix=(os.name != "nt"))[0].strip("\"'")
     except ValueError:
-        return command.split()[0]
+        return command.split()[0].strip("\"'")
+
+
+def first_action_path(action_paths: str) -> str:
+    action_paths = action_paths.strip()
+    if not action_paths:
+        return ""
+    return action_paths.split(" ; ", 1)[0].strip().strip("\"'")
 
 
 def add_flags(task: Task, days: int, now: dt.datetime) -> Task:
@@ -137,6 +144,48 @@ def add_flags(task: Task, days: int, now: dt.datetime) -> Task:
     task["suspicious"] = bool(flags)
     task["severity"] = severity
     return task
+
+
+def build_payload(tasks: List[Task], warnings: List[Warning], days: int) -> Dict[str, Any]:
+    return {
+        "generated_at": utc_now().isoformat(),
+        "threshold_days": days,
+        "summary": {
+            "total": len(tasks),
+            "suspicious": sum(1 for task in tasks if task.get("suspicious")),
+            "high_severity": sum(1 for task in tasks if task.get("severity") == "high"),
+        },
+        "tasks": tasks,
+        "warnings": warnings,
+    }
+
+
+def command_path_exists(command_path: str) -> Optional[bool]:
+    if not command_path:
+        return None
+
+    expanded = os.path.expandvars(os.path.expanduser(command_path.strip().strip('"')))
+    if not expanded:
+        return None
+
+    if os.path.isabs(expanded) or os.path.dirname(expanded):
+        return os.path.exists(expanded)
+
+    return shutil.which(expanded) is not None
+
+
+def add_path_checks(tasks: List[Task]) -> List[Task]:
+    for task in tasks:
+        exists = command_path_exists(str(task.get("command_path") or ""))
+        task["command_path_exists"] = exists
+        if exists is False:
+            flags = task.setdefault("flags", [])
+            if "missing_command_path" not in flags:
+                flags.append("missing_command_path")
+            task["suspicious"] = True
+            if task.get("severity") == "none":
+                task["severity"] = "medium"
+    return tasks
 
 
 def parse_cron_file(
@@ -405,6 +454,7 @@ Get-ScheduledTask | ForEach-Object {
         $arguments = $_.Arguments
         if ($arguments) { "$execute $arguments" } else { "$execute" }
     }) -join ' ; '
+    $actionPaths = @($_.Actions | ForEach-Object { $_.Execute }) -join ' ; '
     $triggers = @($_.Triggers | ForEach-Object { if ($_ -ne $null) { $_.ToString() } }) -join ' ; '
     [PSCustomObject]@{
         TaskName = $_.TaskName
@@ -412,6 +462,7 @@ Get-ScheduledTask | ForEach-Object {
         UserId = $principal.UserId
         RunLevel = $principal.RunLevel.ToString()
         Actions = $actions
+        ActionPaths = $actionPaths
         Triggers = $triggers
     }
 } | ConvertTo-Json -Depth 5
@@ -453,14 +504,16 @@ Get-ScheduledTask | ForEach-Object {
         user_id = item.get("UserId") or "unknown"
         run_level = item.get("RunLevel") or "unknown"
         privileged = is_root_like(user_id) or str(run_level).lower() in {"highest", "highestavailable", "1"}
+        command = item.get("Actions") or ""
+        command_path = first_action_path(item.get("ActionPaths") or "") or first_command_token(command)
 
         tasks.append(
             {
                 "platform": "windows",
                 "type": "scheduled-task",
                 "name": task_path,
-                "command": item.get("Actions") or "",
-                "command_path": first_command_token(item.get("Actions") or ""),
+                "command": command,
+                "command_path": command_path,
                 "privilege_level": f"{user_id} ({run_level})",
                 "runs_as_privileged": privileged,
                 "owner": user_id,
@@ -524,19 +577,25 @@ def trim(value: Any, width: int) -> str:
 
 def print_table(tasks: List[Task]) -> None:
     headers = ["Severity", "Type", "Name", "Run As", "Age", "Schedule", "Command/Source"]
+    include_path_status = any("command_path_exists" in task for task in tasks)
+    if include_path_status:
+        headers.insert(6, "Path")
+
     rows = []
     for task in sorted(tasks, key=lambda item: (item.get("severity") != "high", item.get("severity") != "medium", item.get("name") or "")):
-        rows.append(
-            [
-                task.get("severity", "none").upper(),
-                task.get("type", ""),
-                trim(task.get("name", ""), 34),
-                trim(task.get("privilege_level", ""), 24),
-                "" if task.get("age_days") is None else f"{task['age_days']}d",
-                trim(task.get("schedule", ""), 28),
-                trim(task.get("command") or task.get("source", ""), 44),
-            ]
-        )
+        row = [
+            task.get("severity", "none").upper(),
+            task.get("type", ""),
+            trim(task.get("name", ""), 34),
+            trim(task.get("privilege_level", ""), 24),
+            "" if task.get("age_days") is None else f"{task['age_days']}d",
+            trim(task.get("schedule", ""), 28),
+        ]
+        if include_path_status:
+            exists = task.get("command_path_exists")
+            row.append("yes" if exists is True else "no" if exists is False else "n/a")
+        row.append(trim(task.get("command") or task.get("source", ""), 44))
+        rows.append(row)
 
     widths = [len(header) for header in headers]
     for row in rows:
@@ -551,19 +610,8 @@ def print_table(tasks: List[Task]) -> None:
 
 
 def write_json(path: str, tasks: List[Task], warnings: List[Warning], days: int) -> None:
-    payload = {
-        "generated_at": utc_now().isoformat(),
-        "threshold_days": days,
-        "summary": {
-            "total": len(tasks),
-            "suspicious": sum(1 for task in tasks if task.get("suspicious")),
-            "high_severity": sum(1 for task in tasks if task.get("severity") == "high"),
-        },
-        "tasks": tasks,
-        "warnings": warnings,
-    }
     with open(path, "w", encoding="utf-8") as handle:
-        json.dump(payload, handle, indent=2, sort_keys=True)
+        json.dump(build_payload(tasks, warnings, days), handle, indent=2, sort_keys=True)
 
 
 def parse_args(argv: Optional[Iterable[str]] = None) -> argparse.Namespace:
@@ -573,6 +621,17 @@ def parse_args(argv: Optional[Iterable[str]] = None) -> argparse.Namespace:
     parser.add_argument("--days", type=int, default=180, help="Age threshold in days. Default: 180.")
     parser.add_argument("--output", default="results.json", help="JSON output path. Default: results.json.")
     parser.add_argument("--no-json", action="store_true", help="Do not write JSON output.")
+    parser.add_argument(
+        "--format",
+        choices=("table", "json"),
+        default="table",
+        help="Output format for stdout. Default: table.",
+    )
+    parser.add_argument(
+        "--check-paths",
+        action="store_true",
+        help="Check whether extracted command paths appear to exist.",
+    )
     parser.add_argument("--version", action="version", version=f"Undertaker {VERSION}")
     parser.add_argument("--only-suspicious", action="store_true", help="Only include suspicious tasks in output.")
     parser.add_argument(
@@ -593,18 +652,23 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
 
     now = utc_now()
     tasks = [add_flags(task, args.days, now) for task in scan_all(warnings)]
+    if args.check_paths:
+        add_path_checks(tasks)
     output_tasks = filter_tasks(tasks, args.only_suspicious, args.hide_windows_builtin)
 
-    print_table(output_tasks)
+    if args.format == "json":
+        print(json.dumps(build_payload(output_tasks, warnings, args.days), indent=2, sort_keys=True))
+    else:
+        print_table(output_tasks)
 
-    suspicious_count = sum(1 for task in tasks if task.get("suspicious"))
-    high_count = sum(1 for task in tasks if task.get("severity") == "high")
-    print(f"\nFound {len(tasks)} tasks, {suspicious_count} suspicious ({high_count} high severity).")
-    if len(output_tasks) != len(tasks):
-        print(f"Displayed {len(output_tasks)} task(s) after filters.")
+        suspicious_count = sum(1 for task in tasks if task.get("suspicious"))
+        high_count = sum(1 for task in tasks if task.get("severity") == "high")
+        print(f"\nFound {len(tasks)} tasks, {suspicious_count} suspicious ({high_count} high severity).")
+        if len(output_tasks) != len(tasks):
+            print(f"Displayed {len(output_tasks)} task(s) after filters.")
 
-    if warnings:
-        print(f"Warnings: {len(warnings)} collection issue(s). See JSON output for details." if not args.no_json else f"Warnings: {len(warnings)} collection issue(s).")
+        if warnings:
+            print(f"Warnings: {len(warnings)} collection issue(s). See JSON output for details." if not args.no_json else f"Warnings: {len(warnings)} collection issue(s).")
 
     if not args.no_json:
         try:

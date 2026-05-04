@@ -29,6 +29,40 @@ class LegacyAutomationAuditorTests(unittest.TestCase):
         self.assertEqual(task["severity"], "high")
         self.assertEqual(task["flags"], ["old_definition", "privileged"])
 
+    def test_build_payload_summarizes_filtered_tasks(self):
+        tasks = [
+            {"suspicious": True, "severity": "high"},
+            {"suspicious": False, "severity": "none"},
+        ]
+
+        payload = auditor.build_payload(tasks, warnings=[{"source": "x", "error": "y"}], days=90)
+
+        self.assertEqual(payload["threshold_days"], 90)
+        self.assertEqual(payload["summary"]["total"], 2)
+        self.assertEqual(payload["summary"]["suspicious"], 1)
+        self.assertEqual(payload["summary"]["high_severity"], 1)
+        self.assertEqual(len(payload["warnings"]), 1)
+
+    def test_command_path_exists_handles_present_missing_and_empty_paths(self):
+        with tempfile.NamedTemporaryFile("w", delete=False, encoding="utf-8") as handle:
+            path = handle.name
+
+        self.addCleanup(lambda: os.path.exists(path) and os.unlink(path))
+
+        self.assertTrue(auditor.command_path_exists(path))
+        self.assertFalse(auditor.command_path_exists(os.path.join(tempfile.gettempdir(), "missing-undertaker-bin")))
+        self.assertIsNone(auditor.command_path_exists(""))
+
+    def test_first_command_token_strips_outer_quotes(self):
+        command = '"C:\\Program Files\\Example\\task.exe" --quiet'
+
+        self.assertEqual(auditor.first_command_token(command), "C:\\Program Files\\Example\\task.exe")
+
+    def test_first_action_path_preserves_unquoted_paths_with_spaces(self):
+        action_paths = "C:\\Program Files\\Example\\task.exe ; C:\\Tools\\next.exe"
+
+        self.assertEqual(auditor.first_action_path(action_paths), "C:\\Program Files\\Example\\task.exe")
+
     def test_parse_user_cron_file(self):
         with tempfile.NamedTemporaryFile("w", delete=False, encoding="utf-8") as handle:
             handle.write("# comment\n")
@@ -51,6 +85,26 @@ class LegacyAutomationAuditorTests(unittest.TestCase):
         self.assertEqual(tasks[0]["run_user"], "alice")
         self.assertEqual(tasks[0]["command_path"], "/usr/local/bin/backup.sh")
 
+    def test_parse_system_cron_file_with_user_field(self):
+        with tempfile.NamedTemporaryFile("w", delete=False, encoding="utf-8") as handle:
+            handle.write("*/15 * * * * www-data /srv/app/cleanup.sh\n")
+            path = handle.name
+
+        self.addCleanup(lambda: os.path.exists(path) and os.unlink(path))
+
+        tasks = auditor.parse_cron_file(
+            path=path,
+            default_user=None,
+            source_type="test",
+            system_format=True,
+            warnings=[],
+        )
+
+        self.assertEqual(len(tasks), 1)
+        self.assertEqual(tasks[0]["schedule"], "*/15 * * * *")
+        self.assertEqual(tasks[0]["run_user"], "www-data")
+        self.assertFalse(tasks[0]["runs_as_privileged"])
+
     def test_parse_system_cron_file_with_nickname_schedule(self):
         with tempfile.NamedTemporaryFile("w", delete=False, encoding="utf-8") as handle:
             handle.write("@reboot root /opt/startup.sh\n")
@@ -70,6 +124,31 @@ class LegacyAutomationAuditorTests(unittest.TestCase):
         self.assertEqual(tasks[0]["schedule"], "@reboot")
         self.assertEqual(tasks[0]["run_user"], "root")
         self.assertTrue(tasks[0]["runs_as_privileged"])
+
+    def test_parse_systemd_timer_file(self):
+        with tempfile.NamedTemporaryFile("w", delete=False, encoding="utf-8") as handle:
+            handle.write("[Timer]\n")
+            handle.write("OnCalendar=daily\n")
+            handle.write("OnCalendar=Mon *-*-* 03:00:00\n")
+            handle.write("Unit=undertaker.service\n")
+            path = handle.name
+
+        self.addCleanup(lambda: os.path.exists(path) and os.unlink(path))
+
+        schedule, unit_name = auditor.parse_systemd_timer_file(path, warnings=[])
+
+        self.assertEqual(schedule, "daily; Mon *-*-* 03:00:00")
+        self.assertEqual(unit_name, "undertaker.service")
+
+    def test_parse_systemd_service_user(self):
+        with tempfile.NamedTemporaryFile("w", delete=False, encoding="utf-8") as handle:
+            handle.write("[Service]\n")
+            handle.write("User=undertaker\n")
+            path = handle.name
+
+        self.addCleanup(lambda: os.path.exists(path) and os.unlink(path))
+
+        self.assertEqual(auditor.parse_systemd_service_user(path, warnings=[]), "undertaker")
 
     def test_filter_tasks_can_hide_windows_builtins(self):
         tasks = [
@@ -91,6 +170,28 @@ class LegacyAutomationAuditorTests(unittest.TestCase):
 
         self.assertEqual(len(filtered), 1)
         self.assertEqual(filtered[0]["name"], "\\CustomAuditTask")
+
+    def test_add_path_checks_adds_existence_field(self):
+        with tempfile.NamedTemporaryFile("w", delete=False, encoding="utf-8") as handle:
+            path = handle.name
+
+        self.addCleanup(lambda: os.path.exists(path) and os.unlink(path))
+
+        tasks = auditor.add_path_checks([{"command_path": path}])
+
+        self.assertTrue(tasks[0]["command_path_exists"])
+
+    def test_add_path_checks_flags_missing_paths(self):
+        missing = os.path.join(tempfile.gettempdir(), "missing-undertaker-command")
+
+        tasks = auditor.add_path_checks(
+            [{"command_path": missing, "flags": [], "suspicious": False, "severity": "none"}]
+        )
+
+        self.assertFalse(tasks[0]["command_path_exists"])
+        self.assertIn("missing_command_path", tasks[0]["flags"])
+        self.assertTrue(tasks[0]["suspicious"])
+        self.assertEqual(tasks[0]["severity"], "medium")
 
 
 if __name__ == "__main__":

@@ -13,10 +13,9 @@ The filtered scan screenshot uses the real command and local summary counts from
 Command:
 
 ```bash
-python legacy_automation_auditor.py --only-suspicious --hide-windows-builtin --no-json
+python legacy_automation_auditor.py --only-suspicious --hide-windows-builtin --check-paths --no-json
 ```
 
 ![Redacted filtered scan output](assets/undertaker-filtered-scan.svg)
 
-The filters reduce noisy built-in Microsoft tasks and leave a shorter review list of third-party or user-created scheduled tasks.
-
+The filters reduce noisy built-in Microsoft tasks and leave a shorter review list of third-party or user-created scheduled tasks. The `Path` column is produced by `--check-paths` and shows whether the extracted command path appears to exist.
