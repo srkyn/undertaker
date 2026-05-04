@@ -1,3 +1,5 @@
+![Undertaker project banner](docs/assets/undertaker-banner.svg)
+
 # Undertaker: Legacy Automation Auditor
 
 Find old, privileged scheduled jobs before they become operational risk.
@@ -5,6 +7,8 @@ Find old, privileged scheduled jobs before they become operational risk.
 Undertaker is a read-only Python tool for finding scheduled jobs that may be old, privileged, or both.
 
 It audits Linux cron jobs, Linux systemd timers, and Windows Scheduled Tasks, then prints a human-readable table and optionally writes JSON output for later review.
+
+Undertaker's theme is deliberate: scheduled jobs are the old case files of a system. The tool does not bury anything or swing a hammer; it opens the drawer, checks the age and privilege of each entry, and gives the operator a clean docket for review.
 
 ![Release](https://img.shields.io/github/v/release/srkyn/undertaker?style=flat-square)
 ![CI](https://img.shields.io/github/actions/workflow/status/srkyn/undertaker/ci.yml?branch=main&style=flat-square)
@@ -23,6 +27,16 @@ It audits Linux cron jobs, Linux systemd timers, and Windows Scheduled Tasks, th
 - Supports allowlists for known-good scheduled jobs.
 - Includes Windows last-run metadata when available.
 - Ships with tests, CI, issue templates, a security policy, and versioned releases.
+
+## Case File
+
+Undertaker is built around three review questions:
+
+- `What is still scheduled?`
+- `How long has it been there?`
+- `Does it run with more privilege than expected?`
+
+The output is intentionally plain because the goal is not drama. It is to make forgotten automation visible enough for a human to close, allowlist, or investigate the right work.
 
 ## Demo
 
