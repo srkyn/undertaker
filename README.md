@@ -1,6 +1,6 @@
 ![Undertaker project banner](docs/assets/undertaker-banner.svg)
 
-# Undertaker: Legacy Automation Auditor
+# Undertaker
 
 Find old, privileged scheduled jobs before they become operational risk.
 
@@ -86,47 +86,43 @@ The flags are triage signals, not proof of compromise.
 
 ## Usage
 
-Run directly from a clone:
+Install from a clone:
 
 ```bash
-python legacy_automation_auditor.py
+git clone https://github.com/srkyn/undertaker.git
+cd undertaker
+pip install .
 ```
 
-Install as a local CLI from the repository:
+Run a scan:
 
 ```bash
-python -m pip install .
-undertaker --only-suspicious
+uk                        # short alias
+undertaker                # full name
+uk --only-suspicious      # flagged tasks only
+uk -d 90                  # custom age threshold (short flag)
+undertaker --days 90      # same, long form
 ```
 
-Check the installed version:
+Write JSON output:
 
 ```bash
-undertaker --version
+uk -o results.json
+uk --output results.json
 ```
 
-Use a different age threshold:
+Emit JSON to stdout (for pipelines):
 
 ```bash
-python legacy_automation_auditor.py --days 90
+uk -f json -n
+uk --format json --no-json
 ```
 
-Write JSON to a specific file:
+Check whether extracted command paths exist:
 
 ```bash
-python legacy_automation_auditor.py --output results.json
-```
-
-Emit JSON to stdout:
-
-```bash
-python legacy_automation_auditor.py --format json --no-json
-```
-
-Check whether extracted command paths appear to exist:
-
-```bash
-python legacy_automation_auditor.py --check-paths
+uk -p
+uk --check-paths
 ```
 
 When enabled, missing command paths are flagged as `missing_command_path` and shown in table output.
@@ -134,32 +130,41 @@ When enabled, missing command paths are flagged as `missing_command_path` and sh
 Suppress known-good tasks with an allowlist:
 
 ```bash
-python legacy_automation_auditor.py --allowlist examples/allowlist.example.json
+uk -a examples/allowlist.example.json
+uk --allowlist examples/allowlist.example.json
 ```
 
-Skip JSON output:
+Reduce Windows noise:
 
 ```bash
-python legacy_automation_auditor.py --no-json
+uk -w
+uk --hide-windows-builtin
 ```
 
-Show only tasks that were flagged:
+Check the installed version:
 
 ```bash
-python legacy_automation_auditor.py --only-suspicious
+uk --version
 ```
 
-Reduce Windows noise by hiding obvious built-in Microsoft tasks:
-
-```bash
-python legacy_automation_auditor.py --hide-windows-builtin
-```
-
-The script ends with a summary:
+The scan ends with a summary:
 
 ```text
 Found X tasks, Y suspicious (Z high severity).
 ```
+
+## Short Flags
+
+| Short | Long | Description |
+|---|---|---|
+| `-d N` | `--days N` | Age threshold in days (default: 180) |
+| `-o FILE` | `--output FILE` | JSON output path |
+| `-n` | `--no-json` | Skip JSON file output |
+| `-f FORMAT` | `--format FORMAT` | Stdout format: `table` or `json` |
+| `-s` | `--only-suspicious` | Show flagged tasks only |
+| `-w` | `--hide-windows-builtin` | Hide built-in Microsoft tasks |
+| `-p` | `--check-paths` | Verify extracted command paths exist |
+| `-a FILE` | `--allowlist FILE` | Path to JSON allowlist |
 
 ## Output Fields
 
@@ -178,7 +183,7 @@ The point is not to label every privileged task as bad. The point is to make pri
 
 ## Files
 
-- `legacy_automation_auditor.py`: the scanner CLI
+- `legacy_automation_auditor.py`: the scanner
 - `docs/design-notes.md`: design notes, implementation details, and limitations
 - `docs/demo.md`: screenshots and example output
 - `examples/allowlist.example.json`: sample allowlist
@@ -194,11 +199,9 @@ The point is not to label every privileged task as bad. The point is to make pri
 
 ## Validation
 
-The script was checked with:
-
 ```bash
 python -m py_compile legacy_automation_auditor.py
-python legacy_automation_auditor.py --no-json
-python legacy_automation_auditor.py --format json --no-json
 python -m unittest discover -s tests
+uk --version
+uk --no-json
 ```
