@@ -686,30 +686,31 @@ def write_json(path: str, tasks: List[Task], warnings: List[Warning], days: int)
 
 def parse_args(argv: Optional[Iterable[str]] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
+        prog="uk",
         description="Find old and/or high-privilege scheduled automations on Linux and Windows."
     )
-    parser.add_argument("--days", type=int, default=180, help="Age threshold in days. Default: 180.")
-    parser.add_argument("--output", default="results.json", help="JSON output path. Default: results.json.")
-    parser.add_argument("--no-json", action="store_true", help="Do not write JSON output.")
+    parser.add_argument("-d", "--days", type=int, default=180, help="Age threshold in days. Default: 180.")
+    parser.add_argument("-o", "--output", default="results.json", help="JSON output path. Default: results.json.")
+    parser.add_argument("-n", "--no-json", action="store_true", help="Do not write JSON output.")
     parser.add_argument(
-        "--format",
+        "-f", "--format",
         choices=("table", "json"),
         default="table",
         help="Output format for stdout. Default: table.",
     )
     parser.add_argument(
-        "--check-paths",
+        "-p", "--check-paths",
         action="store_true",
         help="Check whether extracted command paths appear to exist.",
     )
     parser.add_argument(
-        "--allowlist",
+        "-a", "--allowlist",
         help="Path to a JSON allowlist. Entries are matched against task name, source, command path, and command.",
     )
     parser.add_argument("--version", action="version", version=f"Undertaker {VERSION}")
-    parser.add_argument("--only-suspicious", action="store_true", help="Only include suspicious tasks in output.")
+    parser.add_argument("-s", "--only-suspicious", action="store_true", help="Only include suspicious tasks in output.")
     parser.add_argument(
-        "--hide-windows-builtin",
+        "-w", "--hide-windows-builtin",
         action="store_true",
         help="Hide obvious built-in Microsoft Windows tasks from output.",
     )

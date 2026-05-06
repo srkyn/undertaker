@@ -36,6 +36,7 @@ classifiers = [
 ]
 
 [project.scripts]
+uk = "legacy_automation_auditor:main"
 undertaker = "legacy_automation_auditor:main"
 
 [tool.setuptools]
