@@ -8,7 +8,7 @@ Security fixes are handled on the latest released version.
 
 | Version | Supported |
 | --- | --- |
-| 0.1.x | Yes |
+| 0.3.x | Yes |
 
 ## Reporting A Security Issue
 
@@ -29,4 +29,3 @@ Out of scope:
 - A scheduled task on your own system being flagged as suspicious.
 - Platform permission errors when the current user cannot read protected task definitions.
 - Requests to identify whether a specific scheduled task is malicious without supporting evidence.
-
