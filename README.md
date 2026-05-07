@@ -38,6 +38,17 @@ Undertaker is built around three review questions:
 
 The output is intentionally plain because the goal is not theater. It is to make forgotten automation visible enough for a human to close, allowlist, or investigate the right work.
 
+## Review Flow
+
+```mermaid
+flowchart LR
+    Sources["Scheduled job sources<br/>cron, systemd timers, Windows Scheduled Tasks"] --> Parser["Read-only collection<br/>names, commands, users, timestamps"]
+    Parser --> Signals["Triage signals<br/>age threshold, privilege, optional path checks"]
+    Signals --> Score["Severity<br/>none, medium, high"]
+    Score --> Output["Operator output<br/>table, JSON, summary"]
+    Output --> Decision["Human review<br/>keep, allowlist, investigate, remove outside the tool"]
+```
+
 ## Demo
 
 ![Redacted filtered scan output](docs/assets/undertaker-filtered-scan.svg)
