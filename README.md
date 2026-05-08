@@ -8,7 +8,7 @@ Undertaker is a read-only Python tool for finding scheduled jobs that may be old
 
 It audits Linux cron jobs, Linux systemd timers, and Windows Scheduled Tasks, then prints a human-readable table and optionally writes JSON output for later review.
 
-Undertaker's theme is the graveyard shift: dark, serious, and built for bringing old automation back into view. It does not bury anything or swing a hammer; it raises forgotten scheduled jobs into a clean review table so an operator can decide what still belongs.
+The name is thematic, but the tool is intentionally plain: collect scheduled-task metadata, score age and privilege, and leave decisions to the operator.
 
 ![Release](https://img.shields.io/github/v/release/srkyn/undertaker?style=flat-square)
 ![CI](https://img.shields.io/github/actions/workflow/status/srkyn/undertaker/ci.yml?branch=main&style=flat-square)
@@ -28,7 +28,7 @@ Undertaker's theme is the graveyard shift: dark, serious, and built for bringing
 - Includes Windows last-run metadata when available.
 - Ships with tests, CI, issue templates, a security policy, and versioned releases.
 
-## Graveyard Shift
+## Review Questions
 
 Undertaker is built around three review questions:
 
@@ -36,7 +36,7 @@ Undertaker is built around three review questions:
 - `How long has it been there?`
 - `Does it run with more privilege than expected?`
 
-The output is intentionally plain because the goal is not theater. It is to make forgotten automation visible enough for a human to close, allowlist, or investigate the right work.
+The output is intentionally plain. The goal is to make neglected automation visible enough for a human to close, allowlist, or investigate the right work.
 
 ## Review Flow
 

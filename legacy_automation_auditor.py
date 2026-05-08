@@ -88,7 +88,7 @@ def owner_name_from_uid(uid: Optional[int]) -> Optional[str]:
         import pwd
 
         return pwd.getpwuid(uid).pw_name
-    except Exception:
+    except (ImportError, KeyError, OSError):
         return str(uid)
 
 
