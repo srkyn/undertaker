@@ -6,7 +6,7 @@ Find old, privileged scheduled jobs before they become operational risk.
 
 Undertaker is a Python tool that looks for scheduled jobs that may have been forgotten but still run automatically. On Linux, that means cron jobs and systemd timers. On Windows, that means Scheduled Tasks.
 
-The goal is simple: find automation that is old, powerful, or both.
+The goal is simple: find automation that is old, privileged, or both.
 
 This matters because scheduled jobs often run quietly in the background. They may restart services, run maintenance scripts, move files, launch applications, update software, or perform administrative tasks. Over time, people forget why a task was created, who owns it, or whether it still needs elevated permissions. A forgotten scheduled job with high privileges can become a security and operations risk.
 
@@ -69,7 +69,7 @@ For each scheduled job, the auditor tries to collect:
 - Suspicion flags
 - Severity
 
-The script is intentionally best-effort. Some task definitions may require administrator or root permissions to read fully. If the script cannot read something, it records a warning instead of crashing.
+The script is best-effort. Some task definitions may require administrator or root permissions to read fully. If the script cannot read something, it records a warning instead of crashing.
 
 ## How Suspicious Tasks Are Flagged
 
@@ -180,7 +180,7 @@ That is intentional. Scheduled tasks can be important. Disabling the wrong one c
 
 ## Allowlist Behavior
 
-The allowlist is intentionally simple. Entries are case-insensitive substrings matched against task name, source path, command path, and command text.
+The allowlist is simple. Entries are case-insensitive substrings matched against task name, source path, command path, and command text.
 
 When an allowlist entry matches, Undertaker keeps the task in the output but clears its suspicious status, records `allowlisted: true`, and stores the matching entry in `allowlist_match`.
 
@@ -283,4 +283,4 @@ The project uses "Undertaker" as the memorable public name and `legacy_automatio
 
 The script separates collection from scoring. Platform-specific scanner functions normalize cron entries, systemd timers, and Windows Scheduled Tasks into a common task schema. A separate scoring function applies age and privilege rules, which keeps the output consistent across operating systems and keeps the risk logic easy to adjust.
 
-Undertaker is intentionally narrow: inventory scheduled automation, identify old or privileged task definitions, and produce reviewable output without changing the host.
+Undertaker is narrow by design: inventory scheduled automation, identify old or privileged task definitions, and produce reviewable output without changing the host.

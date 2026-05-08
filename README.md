@@ -8,7 +8,7 @@ Undertaker is a read-only Python tool for finding scheduled jobs that may be old
 
 It audits Linux cron jobs, Linux systemd timers, and Windows Scheduled Tasks, then prints a human-readable table and optionally writes JSON output for later review.
 
-The name is thematic, but the tool is intentionally plain: collect scheduled-task metadata, score age and privilege, and leave decisions to the operator.
+The name is thematic, but the tool stays plain: collect scheduled-task metadata, score age and privilege, and leave decisions to the operator.
 
 ![Release](https://img.shields.io/github/v/release/srkyn/undertaker?style=flat-square)
 ![CI](https://img.shields.io/github/actions/workflow/status/srkyn/undertaker/ci.yml?branch=main&style=flat-square)
@@ -36,7 +36,7 @@ Undertaker is built around three review questions:
 - `How long has it been there?`
 - `Does it run with more privilege than expected?`
 
-The output is intentionally plain. The goal is to make neglected automation visible enough for a human to close, allowlist, or investigate the right work.
+The output is plain by design. The goal is to make neglected automation visible enough for a human to close, allowlist, or investigate the right work.
 
 ## Review Flow
 
@@ -181,7 +181,7 @@ Found X tasks, Y suspicious (Z high severity).
 
 JSON output includes each task's platform, type, name, command, run user, owner, schedule, source definition, modified timestamp, age in days, flags, risk reasons, and severity. Windows tasks include last-run metadata when available. When `--check-paths` is used, each task also includes `command_path_exists`.
 
-Severity is intentionally simple:
+Severity is simple:
 
 - `medium`: old or privileged
 - `high`: old and privileged
