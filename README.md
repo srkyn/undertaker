@@ -194,7 +194,7 @@ The point is not to label every privileged task as bad. The point is to make pri
 
 ## Files
 
-- `legacy_automation_auditor.py`: the scanner
+- `undertaker.py`: the scanner
 - `docs/design-notes.md`: design notes, implementation details, and limitations
 - `docs/demo.md`: screenshots and example output
 - `examples/allowlist.example.json`: sample allowlist
@@ -211,7 +211,7 @@ The point is not to label every privileged task as bad. The point is to make pri
 ## Validation
 
 ```bash
-python -m py_compile legacy_automation_auditor.py
+python -m py_compile undertaker.py
 python -m unittest discover -s tests
 uk --version
 uk --no-json
