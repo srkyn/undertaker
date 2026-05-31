@@ -2,11 +2,11 @@
 
 # Undertaker
 
-Find old, privileged scheduled jobs before they become operational risk.
+Find old, privileged scheduled jobs before everyone forgets why they exist.
 
-Undertaker is a read-only Python tool for finding scheduled jobs that may be old, privileged, or both.
+Undertaker is a read-only Python tool for the kind of scheduled work that quietly piles up: old cron entries, systemd timers, and Windows Scheduled Tasks that still run with more access than people remember.
 
-It audits Linux cron jobs, Linux systemd timers, and Windows Scheduled Tasks, then prints a human-readable table and optionally writes JSON output for later review.
+It prints a human-readable table, can write JSON for later review, and leaves the actual cleanup decision to the operator.
 
 The name is thematic, but the tool stays plain: collect scheduled-task metadata, score age and privilege, and leave decisions to the operator.
 
