@@ -36,8 +36,8 @@ classifiers = [
 ]
 
 [project.scripts]
-uk = "legacy_automation_auditor:main"
-undertaker = "legacy_automation_auditor:main"
+uk = "undertaker:main"
+undertaker = "undertaker:main"
 
 [tool.setuptools]
-py-modules = ["legacy_automation_auditor"]
+py-modules = ["undertaker"]
