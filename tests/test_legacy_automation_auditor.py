@@ -8,7 +8,7 @@ import unittest
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT_ROOT)
 
-import legacy_automation_auditor as auditor  # noqa: E402
+import undertaker as auditor  # noqa: E402
 
 
 class LegacyAutomationAuditorTests(unittest.TestCase):

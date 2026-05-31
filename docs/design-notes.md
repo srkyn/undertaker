@@ -30,7 +30,7 @@ That makes it useful for home lab audits, endpoint hygiene, small business IT re
 
 ## What The Script Checks
 
-The script is named `legacy_automation_auditor.py`.
+The script is named `undertaker.py`.
 
 It scans different places depending on the operating system.
 
@@ -92,37 +92,37 @@ This does not mean every flagged task is malicious. Many normal operating system
 Basic run:
 
 ```bash
-python legacy_automation_auditor.py
+python undertaker.py
 ```
 
 Use a different age threshold:
 
 ```bash
-python legacy_automation_auditor.py --days 90
+python undertaker.py --days 90
 ```
 
 Write JSON to a specific file:
 
 ```bash
-python legacy_automation_auditor.py --output results.json
+python undertaker.py --output results.json
 ```
 
 Print only the table and skip JSON output:
 
 ```bash
-python legacy_automation_auditor.py --no-json
+python undertaker.py --no-json
 ```
 
 Show only suspicious tasks:
 
 ```bash
-python legacy_automation_auditor.py --only-suspicious
+python undertaker.py --only-suspicious
 ```
 
 Hide obvious built-in Microsoft Windows tasks:
 
 ```bash
-python legacy_automation_auditor.py --hide-windows-builtin
+python undertaker.py --hide-windows-builtin
 ```
 
 The script prints a summary like:
@@ -277,7 +277,7 @@ Useful future improvements would include:
 
 ## Naming Note
 
-The project uses "Undertaker" as the memorable public name and `legacy_automation_auditor.py` as the explicit command-line script name. That keeps the branding distinct without making the terminal workflow cute or unclear.
+The project uses "Undertaker" as the memorable public name and `undertaker.py` as the explicit command-line script name. That keeps the branding and terminal workflow aligned.
 
 ## Design Summary
 

@@ -13,7 +13,7 @@ The filtered scan screenshot uses the real command and local summary counts from
 Command:
 
 ```bash
-python legacy_automation_auditor.py --only-suspicious --hide-windows-builtin --check-paths --no-json
+python undertaker.py --only-suspicious --hide-windows-builtin --check-paths --no-json
 ```
 
 ![Redacted filtered scan output](assets/undertaker-filtered-scan.svg)

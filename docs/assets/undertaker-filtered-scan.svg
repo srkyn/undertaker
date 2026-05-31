@@ -3,7 +3,7 @@
 <rect x="12" y="12" width="1226" height="302" rx="12" fill="#020617" stroke="#334155"/>
 <circle cx="40" cy="38" r="7" fill="#ef4444"/><circle cx="64" cy="38" r="7" fill="#f59e0b"/><circle cx="88" cy="38" r="7" fill="#22c55e"/>
 <text x="118" y="43" fill="#94a3b8" font-family="Consolas, monospace" font-size="15">Redacted Windows filtered scan with path checks</text>
-<text x="28" y="76" fill="#5eead4" font-family="Consolas, monospace" font-size="16">$ python legacy_automation_auditor.py --only-suspicious --hide-windows-builtin --check-paths --no-json</text>
+<text x="28" y="76" fill="#5eead4" font-family="Consolas, monospace" font-size="16">$ python undertaker.py --only-suspicious --hide-windows-builtin --check-paths --no-json</text>
 <text x="28" y="106" fill="#e2e8f0" font-family="Consolas, monospace" font-size="16">Severity  Type            Name                         Run As             Age   Schedule                 Path  Command/Source</text>
 <text x="28" y="130" fill="#e2e8f0" font-family="Consolas, monospace" font-size="16">--------  --------------  ---------------------------  -----------------  ----  -----------------------  ----  -------------------------</text>
 <text x="28" y="154" fill="#facc15" font-family="Consolas, monospace" font-size="16">MEDIUM    scheduled-task  \Vendor\UpdaterTask        SYSTEM (Highest)   165d  MSFT_TaskDailyTrigger    yes   [redacted vendor updater]</text>
