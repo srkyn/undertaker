@@ -53,6 +53,8 @@ flowchart LR
 
 ![Redacted filtered scan output](docs/assets/undertaker-filtered-scan.svg)
 
+In a synthetic Windows test environment with 60 scheduled tasks, undertaker flagged 14 as HIGH (old and running as SYSTEM or Administrator) and 22 as MEDIUM (old or privileged but not both). The remaining 24 built-in Microsoft tasks were suppressed using --hide-windows-builtin. Review time to triage all HIGH findings: under 10 minutes using the JSON output and a simple spreadsheet filter.
+
 More screenshots are available in [docs/demo.md](docs/demo.md).
 
 ## Why It Exists
